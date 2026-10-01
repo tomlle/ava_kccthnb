@@ -48,6 +48,16 @@ if (!indexHtml.includes('<base href="./">')) {
   console.error('GitHub Pages base path is missing from index.html');
   failed = true;
 }
+const runningCourse = fs.readFileSync(path.join(projectRoot, "pages", "13.html"), "utf8");
+if (!runningCourse.includes('class="wiki-size"') || !runningCourse.includes('background-color:green') || !runningCourse.includes('color:yellow')) {
+  console.error("PM running course inline size/color styling is missing");
+  failed = true;
+}
+const glossary = fs.readFileSync(path.join(projectRoot, "pages", "16.html"), "utf8");
+if (!glossary.includes('class="wiki-toc"') || !glossary.includes('class="wiki-toc-level-4"') || !glossary.includes('id="wiki-heading-1"')) {
+  console.error("KCCT glossary table of contents/heading hierarchy is missing");
+  failed = true;
+}
 for (const asset of ["mirror.css", "assets/uploads/manifest.json", "index.html"]) {
   if (!fs.existsSync(path.join(__dirname, "..", asset))) {
     console.error(`missing: ${asset}`);

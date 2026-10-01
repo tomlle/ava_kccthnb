@@ -40,8 +40,35 @@ $pageTitles = [ordered]@{
   3 = "右メニュー"
 }
 
+function Convert-WikiInline([string]$text) {
+  $result = [Net.WebUtility]::HtmlEncode($text)
+  $result = [regex]::Replace($result, '\[\[(.*?)&gt;(https?://.*?)\]\]', '<a href="$2">$1</a>')
+
+  for ($pass = 0; $pass -lt 10; $pass += 1) {
+    $before = $result
+    $result = [regex]::Replace($result, '&amp;color\(([^)]*)\)\{([^{}]*)\}', {
+      param($match)
+      $colors = $match.Groups[1].Value.Split(',', 2)
+      $foreground = $colors[0].Trim()
+      $background = if ($colors.Count -gt 1) { $colors[1].Trim() } else { '' }
+      $styles = [Collections.Generic.List[string]]::new()
+      if ($foreground -match '^(?:#[0-9a-fA-F]{3,8}|[a-zA-Z]+|rgb\([0-9, ]+\))$') { $styles.Add("color:$foreground") }
+      if ($background -match '^(?:#[0-9a-fA-F]{3,8}|[a-zA-Z]+|rgb\([0-9, ]+\))$') { $styles.Add("background-color:$background") }
+      if ($styles.Count -eq 0) { return $match.Groups[2].Value }
+      return "<span class=`"wiki-color`" style=`"$($styles -join ';')`">$($match.Groups[2].Value)</span>"
+    })
+    $result = [regex]::Replace($result, '&amp;size\((\d+)\)\{([^{}]*)\}', '<span class="wiki-size" style="font-size:$1px">$2</span>')
+    $result = [regex]::Replace($result, '&amp;font\((\d+)(?:px)?\)\{([^{}]*)\}', '<span class="wiki-size" style="font-size:$1px">$2</span>')
+    $result = [regex]::Replace($result, '&amp;bold\(\)\{([^{}]*)\}', '<strong>$1</strong>')
+    if ($result -eq $before) { break }
+  }
+  return $result
+}
+
 function Convert-WikiText([string]$source, [int]$pageId = 0) {
   $builder = [Text.StringBuilder]::new()
+  $headings = [Collections.Generic.List[object]]::new()
+  $tocMarker = '<!--WIKI_TOC-->'
   foreach ($line in ($source -split "`r?`n")) {
     if ($line -match '^#ref\(([^,\)]+)(.*)\)$') {
       $imageName = $Matches[1].Trim()
@@ -54,20 +81,31 @@ function Convert-WikiText([string]$source, [int]$pageId = 0) {
       [void]$builder.AppendLine("<p><img src=`"$imageUrl`" alt=`"$([Net.WebUtility]::HtmlEncode($imageName))`"$sizeAttributes></p>")
       continue
     }
-    $cleanLine = $line -replace '&(?:size|color)\([^)]*\)\{', ''
-    $cleanLine = $cleanLine -replace '&font\([^)]*\)\{', ''
-    $cleanLine = $cleanLine -replace '\}+$', ''
-    $encoded = [Net.WebUtility]::HtmlEncode($cleanLine)
-    $encoded = [regex]::Replace($encoded, '\[\[(.*?)&gt;(https?://.*?)\]\]', '<a href="$2">$1</a>')
-    if ($line -match '^\*\*\*(.+)$') { [void]$builder.AppendLine("<h4>$([Net.WebUtility]::HtmlEncode($Matches[1]))</h4>"); continue }
-    if ($line -match '^\*\*(.+)$') { [void]$builder.AppendLine("<h3>$([Net.WebUtility]::HtmlEncode($Matches[1]))</h3>"); continue }
-    if ($line -match '^\*(.+)$') { [void]$builder.AppendLine("<h2>$([Net.WebUtility]::HtmlEncode($Matches[1]))</h2>"); continue }
+    $encoded = Convert-WikiInline $line
+    if ($line -match '^(\*{1,3})(.+)$') {
+      $level = $Matches[1].Length + 1
+      $headingText = $Matches[2]
+      $headingId = "wiki-heading-$($headings.Count + 1)"
+      $headings.Add([pscustomobject]@{ Level = $level; Id = $headingId; Text = $headingText })
+      $headingHtml = Convert-WikiInline $headingText
+      [void]$builder.AppendLine("<h$level id=`"$headingId`">$headingHtml</h$level>")
+      continue
+    }
     if ($line -eq '----') { [void]$builder.AppendLine('<hr>'); continue }
-    if ($line -match '^#contents') { continue }
+    if ($line -match '^#contents') { [void]$builder.AppendLine($tocMarker); continue }
     if ([string]::IsNullOrWhiteSpace($line)) { [void]$builder.AppendLine('<div class="spacer"></div>'); continue }
     [void]$builder.AppendLine("<p>$encoded</p>")
   }
-  return $builder.ToString()
+  $html = $builder.ToString()
+  if ($html.Contains($tocMarker)) {
+    $tocItems = foreach ($heading in $headings) {
+      $safeHeading = [Net.WebUtility]::HtmlEncode($heading.Text)
+      "<li class=`"wiki-toc-level-$($heading.Level)`"><a href=`"#$($heading.Id)`">$safeHeading</a></li>"
+    }
+    $toc = "<nav class=`"wiki-toc`" aria-label=`"目次`"><ul>`n$($tocItems -join "`n")`n</ul></nav>"
+    $html = $html.Replace($tocMarker, $toc)
+  }
+  return $html
 }
 
 function Get-MenuHtml {

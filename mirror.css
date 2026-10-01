@@ -172,6 +172,20 @@ hr {
 
 .spacer { min-height: 1em; }
 
+.wiki-color > a { color: inherit; }
+
+.wiki-toc {
+  margin: 1em 0 1.5em;
+}
+
+#wikibody .wiki-toc ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+#wikibody .wiki-toc .wiki-toc-level-3 { margin-left: 1em; }
+#wikibody .wiki-toc .wiki-toc-level-4 { margin-left: 2em; }
+
 #body_footer {
   clear: both;
   margin-top: 2em;
