@@ -1,0 +1,219 @@
+:root { color-scheme: dark; }
+
+html,
+body#atwiki-jp {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: #fff;
+  font-family: Arial, Helvetica, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", Osaka, "メイリオ", Meiryo, "MS Pゴシック", sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.4;
+}
+
+body#atwiki-jp { text-align: justify; }
+
+a:link { color: #fff; text-decoration: underline; }
+a:visited { color: #eee; text-decoration: underline; }
+a:hover,
+a:active { color: #c60; text-decoration: none; }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 { color: #c60; }
+
+#header,
+#wrapper,
+#footer {
+  width: 1100px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#header {
+  padding-bottom: 5px;
+  border-bottom: 20px solid #333;
+}
+
+#header h1 {
+  margin: 0 0 0 10px;
+  padding-top: 26px;
+  color: #c60;
+  font-size: 36px;
+}
+
+#header h1 a { color: #c60; text-decoration: none; }
+
+#header h2 {
+  margin: 0 0 10px 25px;
+  color: #fff;
+  font-size: 24px;
+}
+
+#header h2 a { color: #fff; text-decoration: none; }
+
+#wrapper::after {
+  display: block;
+  clear: both;
+  height: 0;
+  content: "";
+}
+
+#contents {
+  float: right;
+  width: 860px;
+  margin-bottom: 15px;
+  padding: 1em 0 1em 15px;
+  overflow: hidden;
+}
+
+#menubar {
+  float: left;
+  width: 200px;
+  padding: 1em 0 1em 1px;
+  overflow: hidden;
+}
+
+#rightbar,
+#right_bar,
+#rightmenu,
+#right_menu,
+.rightmenu { display: none; }
+
+#wikibody p,
+#wikibody dl,
+#menubar p,
+#menubar dl { display: block; margin: 1em 0; }
+
+#wikibody h1,
+#wikibody h2,
+#wikibody h3,
+#wikibody h4,
+#wikibody h5,
+#wikibody h6,
+#menubar h1,
+#menubar h2,
+#menubar h3,
+#menubar h4,
+#menubar h5,
+#menubar h6 { margin: 13px 0; }
+
+#wikibody blockquote,
+#menubar blockquote {
+  margin: 1em 0 1em 1em;
+  padding-left: 1em;
+  border-left: 5px solid #fff;
+}
+
+#wikibody ul,
+#menubar ul {
+  display: block;
+  margin: 1em 0;
+  padding-left: 25px;
+  list-style-type: disc;
+}
+
+#wikibody ol,
+#menubar ol {
+  display: block;
+  margin: 1em 0;
+  padding-left: 25px;
+  list-style-type: decimal;
+}
+
+#wikibody li,
+#menubar li { display: list-item; }
+
+#wikibody ul ul,
+#wikibody ul ol,
+#wikibody ol ul,
+#wikibody ol ol,
+#menubar ul ul,
+#menubar ul ol,
+#menubar ol ul,
+#menubar ol ol { margin-top: 0; margin-bottom: 0; }
+
+#wikibody table,
+#menubar table {
+  display: table;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  border: 1px solid #fff;
+  border-spacing: 2px;
+  border-collapse: collapse;
+  text-indent: 0;
+}
+
+#wikibody td,
+#menubar td { padding: 3px; border: 1px solid #fff; }
+
+#wikibody th,
+#menubar th {
+  padding: 3px;
+  border: 1px solid #fff;
+  background: #fff;
+  color: #000;
+  font-weight: bold;
+}
+
+#wikibody img { max-width: 100%; }
+
+hr {
+  height: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-bottom-color: #999;
+}
+
+.spacer { min-height: 1em; }
+
+#body_footer {
+  clear: both;
+  margin-top: 2em;
+  text-align: right;
+}
+
+#footer {
+  clear: both;
+  padding-bottom: 1em;
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 11px;
+}
+
+@media (max-width: 1120px) {
+  #header,
+  #wrapper,
+  #footer {
+    box-sizing: border-box;
+    width: calc(100% - 24px);
+  }
+
+  #contents {
+    box-sizing: border-box;
+    width: calc(100% - 220px);
+  }
+}
+
+@media (max-width: 640px) {
+  #header,
+  #wrapper,
+  #footer { width: calc(100% - 16px); }
+
+  #header h1 { padding-top: 16px; font-size: 26px; }
+  #header h2 { font-size: 19px; }
+
+  #contents,
+  #menubar {
+    box-sizing: border-box;
+    float: none;
+    width: 100%;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "ava-kccthnb-mirror",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AVA_KCCT本部 クランHP static mirror",
+  "scripts": {
+    "start": "node server.js",
+    "sync": "pwsh -File scripts/sync-mirror.ps1",
+    "check": "node scripts/check-mirror.js"
+  }
+}
